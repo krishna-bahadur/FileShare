@@ -1,0 +1,150 @@
+﻿@{
+    ViewData["Title"] = "File Share - Home";
+}
+
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body text-center p-5">
+                <h4 class="mb-4">📂 Share Your Files Securely</h4>
+                <p class="text-muted">Drag & Drop your file here or click to upload</p>
+
+                @* Drag & Drop Zone *@
+                <div id="dropZone" class="border border-1 border-dash rounded-3 p-5 bg-light mb-3">
+                    <input type="file" id="fileInput" hidden />
+                    <i id="dropZoneIcon" class="fa-solid fa-cloud-arrow-up fs-1 text-primary"></i>
+                    <p class="mt-2">Drop file here</p>
+                    <button id="browseBtn" class="btn btn-primary btn-sm mt-2">Browse File</button>
+                </div>
+
+                @* Upload Progress *@
+                <div id="progressContainer" class="progress d-none mb-3">
+                    <div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:0%">
+                    </div>
+                </div>
+
+                @* Generated Link *@
+                <div id="linkContainer" class="alert alert-success d-none">
+                    <strong>File uploaded!</strong><br />
+                    <div class="input-group mt-2">
+                        <input type="text" id="shareLink" class="form-control no-focus-style fst-normal" readonly />
+                        <button class="btn btn-sm btn-secondary no-focus-style" id="copyBtn" type="button">
+                            <i class="fa-solid fa-clipboard"></i> Copy
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var dropZone = $('#dropZone');
+            var dropZoneIcon = $('#dropZoneIcon');
+            var fileInput = $('#fileInput');
+            var browseBtn = $('#browseBtn');
+
+            dropZone.on('dragover', function (e) {
+                e.preventDefault();
+                dropZone.addClass('text-muted');
+                dropZoneIcon.removeClass('text-primary');
+            });
+
+            dropZone.on('dragleave', function (e) {
+                e.preventDefault();
+                dropZone.removeClass('text-muted');
+            });
+
+            dropZone.on('drop', function (e){
+                e.preventDefault();
+               dropZone.removeClass('text-muted');
+               var files = e.originalEvent.dataTransfer.files;
+               if(files.length > 0){
+                   uploadFile(files[0]);
+               }
+            });
+
+            function uploadFile(file){
+                var formData = new FormData();
+                formData.append("file", file);
+
+                $('#progressContainer').removeClass('d-none');
+                $('#progressbar').css('width', '0%');
+
+                $.ajax({
+                    url: 'Home/Upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    xhr: function () {
+                        var xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (e){
+                            if(e.lengthComputable){
+                                var percent = (e.loaded / e.total) * 100;
+                                $('#progressbar').css('width', percent + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function (response) {
+                        if(response.success){
+                            $('#linkContainer').removeClass('d-none');
+                            $('#shareLink').val(response.link);
+                        }else{
+                            alert("Something went wrong. Please try again later...")
+                        }
+                    }
+                });
+            }
+
+            $('#copyBtn').on('click', function () {
+                var link = $('#shareLink').val();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    // Modern supported browsers
+                    navigator.clipboard.writeText(link).then(function () {
+                        $('#copyBtn').html('Copied!');
+                        setTimeout(() => {
+                            $('#copyBtn').html('<i class="fa-solid fa-clipboard"></i> Copy');
+                        }, 5000);
+                    }).catch(function (err) {
+                        alert('Clipboard copy failed: ' + err);
+                    });
+                } else {
+                    // Fallback for older browsers
+                    var tempInput = document.createElement('input');
+                    tempInput.value = link;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy'); // old API
+                    document.body.removeChild(tempInput);
+
+                    $('#copyBtn').html('Copied!');
+                    setTimeout(() => {
+                        $('#copyBtn').html('<i class="fa-solid fa-clipboard"></i> Copy');
+                    }, 5000);
+                }
+            });
+
+
+            browseBtn.click(function () {
+                fileInput.click();
+            });
+
+            fileInput.change(function () {
+                if(this.files.length > 0 ){
+                    uploadFile(this.files[0]);
+                }
+            });
+
+        })
+    </script>
+}
+

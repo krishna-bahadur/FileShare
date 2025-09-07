@@ -1,0 +1,8 @@
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\FileShare.exe
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\appsettings.json
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\libman.json
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\FileShare.dll
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\FileShare.deps.json
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\FileShare.runtimeconfig.json
+D:\xMartPoint\projects\FileShare\FileShare\obj\Release\net8.0\PubTmp\Out\FileShare.pdb
